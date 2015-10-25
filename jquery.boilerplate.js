@@ -12,6 +12,10 @@
   var defaults = {
     propertyName: 'value'
   };
+  
+  var getEvent = function (eventName) {
+    return [eventName.toString(), pluginName].join('.');
+  };
 
   var Plugin = function (element, options) {
     this.el = element;
@@ -26,9 +30,9 @@
     init: function () {
 
     },
-    otherFunction: function () {
-
-    }
+    bindEvents: function () {
+      
+    },
   });
 
   $.fn[pluginName] = function (options) {
