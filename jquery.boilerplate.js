@@ -27,8 +27,11 @@
   };
 
   $.extend(Plugin.prototype, {
+    $: function (selector) {
+      return $(selector, this.$el);
+    },
     init: function () {
-
+      
     },
     bindEvents: function () {
       
