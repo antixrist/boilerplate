@@ -13,11 +13,24 @@
     propertyName: 'value'
   };
   
+  /**
+   * Public methods list
+   * @type {string[]}
+   */
+  var publicApi = [
+    ''
+  ];
+
+  /**
+   * @param {string} eventName
+   * @returns {string}
+   */
   var getEvent = function (eventName) {
     return [eventName.toString(), pluginName].join('.');
   };
 
   var Plugin = function (element, options) {
+    options = ($.isPlainObject(options)) ? options : {};
     this.el = element;
     this.$el = $(element);
     this.options = $.extend(true, {}, defaults, options);
@@ -27,25 +40,48 @@
   };
 
   $.extend(Plugin.prototype, {
-    $: function (selector) {
+    $: function $$ (selector) {
       return $(selector, this.$el);
     },
-    init: function () {
+    init: function init$ () {
+      this.setElements();
+      this.bindEvents();
+    },
+    setElements: function setElements$ () {
       
     },
-    bindEvents: function () {
+    bindEvents: function bindEvents$ () {
       
     },
   });
 
-  $.fn[pluginName] = function (options) {
+  $.fn[pluginName] = function () {
+    var args = Array.prototype.slice.call(arguments, 0);
+
+    var api = null;
+    if (args.length && typeof args[0] == 'string') {
+      api = args.splice(0, 1)[0];
+    }
+
     this.each(function () {
-      if (!$.data(this, 'plugin_'+ pluginName)) {
-        $.data(this, 'plugin_'+ pluginName, new Plugin(this, options));
+      var instance = $.data(this, 'plugin_'+ pluginName);
+      if (!instance) {
+        if (api) {
+          // without arguments (run with default options)
+          instance = new Plugin(this);
+        } else {
+          instance = new (Plugin.bind.apply(Plugin, [this].concat(args)));
+        }
+        $.data(this, 'plugin_'+ pluginName, instance);
+      }
+
+      if (api && !!~$.indexOf(api, publicApi) && $.isFunction(instance[api])) {
+        instance[api].apply(instance, args);
       }
     });
 
     return this;
   };
+
 
 })(window, document, jQuery);
