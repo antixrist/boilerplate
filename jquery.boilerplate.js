@@ -40,17 +40,17 @@
   };
 
   $.extend(Plugin.prototype, {
-    $: function $$ (selector) {
+    $: function $_ (selector) {
       return $(selector, this.$el);
     },
-    init: function init$ () {
+    init: function init_ () {
       this.setElements();
       this.bindEvents();
     },
-    setElements: function setElements$ () {
+    setElements: function setElements_ () {
       
     },
-    bindEvents: function bindEvents$ () {
+    bindEvents: function bindEvents_ () {
       
     },
   });
