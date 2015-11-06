@@ -39,7 +39,7 @@
   };
 
   $.extend(Plugin.prototype, {
-    setOptions: setOptions_ function (options) {
+    setOptions: function setOptions_ (options) {
       options = $.isPlainObject(options) ? options : {};
       this.options = $.extend(true, this.options, this._defaults, options);
     },
