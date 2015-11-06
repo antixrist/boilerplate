@@ -15,11 +15,10 @@
   
   /**
    * Public methods list
-   * @type {string[]}
    */
-  var publicApi = [
-    ''
-  ];
+  var publicApi = {
+    'config': 'setOptions'
+  };
 
   /**
    * @param {string} eventName
@@ -30,16 +29,20 @@
   };
 
   var Plugin = function (element, options) {
-    options = ($.isPlainObject(options)) ? options : {};
-    this.el = element;
-    this.$el = $(element);
-    this.options = $.extend(true, {}, defaults, options);
+    this.$el =  $(element);
+    this.el = this.$el.get(0);
+    this.options = {};
+    this.setOptions(options || {});
     this._defaults = defaults;
     this._name = pluginName;
     this.init();
   };
 
   $.extend(Plugin.prototype, {
+    setOptions: setOptions_ function (options) {
+      options = $.isPlainObject(options) ? options : {};
+      this.options = $.extend(true, this.options, this._defaults, options);
+    },
     $: function $_ (selector) {
       return $(selector, this.$el);
     },
@@ -57,12 +60,17 @@
 
   $.fn[pluginName] = function () {
     var args = Array.prototype.slice.call(arguments, 0);
-
+    
     var api = null;
     if (args.length && typeof args[0] == 'string') {
       api = args.splice(0, 1)[0];
     }
-
+    
+    var config = null;
+    if (args.length && $.isPlainObject(args[0])) {
+      config = args[0];
+    }
+    
     this.each(function () {
       var instance = $.data(this, 'plugin_'+ pluginName);
       if (!instance) {
@@ -74,9 +82,19 @@
         }
         $.data(this, 'plugin_'+ pluginName, instance);
       }
-
-      if (api && !!~$.indexOf(api, publicApi) && $.isFunction(instance[api])) {
-        instance[api].apply(instance, args);
+      
+      if (config) {
+        instance.setOptions(config);
+      } else if (api && (api in publicApi)) {
+        
+        var func;
+        if ($.isFunction(publicApi[api])) {
+          func = publicApi[api];
+        } else if ($.isFunction(instance[publicApi[api]])) {
+          func = instance[publicApi[api]];
+        }
+        
+        func.apply(instance, args);
       }
     });
 
